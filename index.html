@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terminal Portfolio - Priyansh Saxena</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="loading-screen">
+        <div class="loading-animation"></div>
+        <div class="loading-text">Initializing Terminal</div>
+    </div>
+
+    <canvas class="matrix-bg" id="matrix"></canvas>
+    
+    <div class="terminal">
+        <div class="scanline"></div>
+        <div class="terminal-header">
+            <div class="controls">
+                <span class="control close"></span>
+                <span class="control minimize"></span>
+                <span class="control maximize"></span>
+            </div>
+            <div class="title">terminal@portfolio</div>
+        </div>
+        <div class="terminal-body">
+            <div id="output"></div>
+            <div class="input-line">
+                <span class="prompt">visitor@portfolio:~$</span>
+                <input type="text" id="terminal-input" autofocus>
+                <span class="cursor"></span>
+            </div>
+        </div>
+        <div class="loading-indicator">
+            <div class="spinner"></div>
+        </div>
+    </div>
+    <script type="module" src="js/index.js"></script>
+</body>
+</html>

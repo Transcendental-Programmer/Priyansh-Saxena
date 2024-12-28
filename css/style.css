@@ -1,0 +1,567 @@
+:root {
+    --terminal-bg: #1e1e1e;
+    --terminal-text: #f0f0f0;
+    --terminal-prompt: #00ff00;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: #2b2b2b;
+    font-family: 'Courier New', monospace;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background 0.5s ease;
+}
+
+.terminal {
+    width: 80%;
+    height: 80vh;
+    background-color: var(--terminal-bg);
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+    position: relative;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, all 0.5s ease;
+}
+
+.terminal:hover {
+    transform: scale(1.005);
+    box-shadow: 0 0 30px rgba(0, 255, 0, 0.2);
+}
+
+.terminal::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(
+        to right,
+        #ff5f56,
+        #ffbd2e,
+        #27c93f
+    );
+    opacity: 0.8;
+}
+
+.terminal-header {
+    background-color: #383838;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.controls {
+    display: flex;
+    gap: 8px;
+}
+
+.control {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.close { background-color: #ff5f56; }
+.minimize { background-color: #ffbd2e; }
+.maximize { background-color: #27c93f; }
+
+.title {
+    color: var(--terminal-text);
+    margin-left: 20px;
+    font-size: 14px;
+}
+
+.terminal-body {
+    padding: 20px;
+    height: calc(100% - 40px);
+    overflow-y: auto;
+    color: var(--terminal-text);
+    position: relative;
+    background: linear-gradient(
+        to bottom,
+        rgba(30, 30, 30, 0.99),
+        rgba(30, 30, 30, 0.9)
+    );
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.terminal-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.terminal-body::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.terminal-body::-webkit-scrollbar-thumb {
+    background: var(--terminal-prompt);
+    border-radius: 4px;
+}
+
+.input-line {
+    display: flex;
+    margin-top: 10px;
+}
+
+.prompt {
+    color: var(--terminal-prompt);
+    margin-right: 10px;
+}
+
+#terminal-input {
+    background: none;
+    border: none;
+    color: var(--terminal-text);
+    font-family: inherit;
+    font-size: inherit;
+    flex: 1;
+    outline: none;
+}
+
+#output {
+    white-space: pre-wrap;
+    line-height: 1.5;
+}
+
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
+.cursor {
+    display: inline-block;
+    width: 8px;
+    height: 1em;
+    background: var(--terminal-text);
+    margin-left: 2px;
+    animation: blink 1s infinite;
+}
+
+.command-output {
+    margin: 10px 0;
+    padding: 5px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.error-text {
+    color: #ff5f56;
+}
+
+.success-text {
+    color: #27c93f;
+}
+
+.highlight-text {
+    color: #ffbd2e;
+}
+
+.command-block {
+    margin: 15px 0;
+    padding: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+}
+
+.tech-tag {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 2px 8px;
+    border-radius: 3px;
+    margin: 2px;
+    font-size: 0.9em;
+}
+
+.achievement-item {
+    margin: 10px 0;
+    padding-left: 20px;
+    border-left: 2px solid var(--terminal-prompt);
+}
+
+/* Loading Animation */
+.loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--terminal-bg);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.loading-text {
+    color: var(--terminal-prompt);
+    font-family: monospace;
+    margin-top: 20px;
+}
+
+@keyframes loadingDots {
+    0%, 20% { content: '.'; }
+    40% { content: '..'; }
+    60% { content: '...'; }
+    80%, 100% { content: ''; }
+}
+
+.loading-text::after {
+    content: '';
+    animation: loadingDots 1.5s infinite;
+}
+
+@keyframes scanline {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(100%); }
+}
+
+.scanline {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 20px;
+    background: linear-gradient(
+        0deg,
+        transparent 0%,
+        var(--terminal-prompt) 50%,
+        transparent 100%
+    );
+    opacity: 0.05;
+    animation: scanline 8s linear infinite;
+    pointer-events: none;
+}
+
+/* Matrix rain effect */
+.matrix-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    opacity: 0.1;
+}
+
+/* Command specific styling */
+.command-response {
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+    background: rgba(0, 0, 0, 0.3);
+    border-left: 3px solid var(--terminal-prompt);
+    transition: all 0.3s ease;
+}
+
+.command-response:hover {
+    background: rgba(0, 0, 0, 0.5);
+    transform: translateX(5px);
+}
+
+/* ...existing code... */
+
+.theme-selector {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 5px;
+    border-radius: 5px;
+    z-index: 100;
+}
+
+.ascii-art {
+    font-family: monospace;
+    white-space: pre;
+    line-height: 1.2;
+    margin: 10px 0;
+}
+
+.file-system {
+    margin: 10px 0;
+}
+
+.file-system .directory {
+    color: var(--terminal-prompt);
+}
+
+.file-system .file {
+    color: var(--terminal-text);
+}
+
+.game-container {
+    border: 1px solid var(--terminal-prompt);
+    margin: 10px 0;
+    padding: 10px;
+}
+
+.weather-widget {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 10px;
+    border-radius: 5px;
+    margin: 10px 0;
+}
+
+/* Theme transitions */
+.terminal {
+    transition: all 0.3s ease;
+}
+
+/* Easter egg animation */
+@keyframes rainbow {
+    0% { color: #ff0000; }
+    20% { color: #ffff00; }
+    40% { color: #00ff00; }
+    60% { color: #00ffff; }
+    80% { color: #ff00ff; }
+    100% { color: #ff0000; }
+}
+
+.rainbow-text {
+    animation: rainbow 5s infinite;
+}
+
+/* Add new theme-specific styles */
+.theme-default {
+    --terminal-bg: linear-gradient(145deg, #1e1e1e 0%, #2d2d2d 100%);
+    --terminal-text: #f0f0f0;
+    --terminal-prompt: #00ff00;
+    --terminal-header: #383838;
+    --terminal-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+    --scrollbar-thumb: #00ff00;
+    --box-shadow: 0 8px 32px rgba(0, 255, 0, 0.1);
+}
+
+.theme-cyberpunk {
+    --terminal-bg: linear-gradient(45deg, #2b0035 0%, #1a0021 100%);
+    --terminal-text: #ff00ff;
+    --terminal-prompt: #00ffff;
+    --terminal-header: #1a0021;
+    --terminal-shadow: 0 0 30px rgba(255, 0, 255, 0.3);
+    --scrollbar-thumb: #00ffff;
+    --box-shadow: 0 8px 32px rgba(255, 0, 255, 0.2);
+    
+    & .terminal-body {
+        background: 
+            linear-gradient(90deg, rgba(255, 0, 255, 0.1) 1px, transparent 1px) 0 0 / 30px 30px,
+            linear-gradient(0deg, rgba(0, 255, 255, 0.1) 1px, transparent 1px) 0 0 / 30px 30px;
+    }
+
+    & .command-response {
+        border-left: 3px solid #00ffff;
+        box-shadow: 0 0 15px rgba(0, 255, 255, 0.2);
+        background: rgba(43, 0, 53, 0.6);
+    }
+
+    & .prompt::before {
+        content: "⚡";
+        margin-right: 5px;
+    }
+}
+
+.theme-retro {
+    --terminal-bg: #002800;
+    --terminal-text: #33ff33;
+    --terminal-prompt: #33ff33;
+    --terminal-header: #001a00;
+    --terminal-shadow: 0 0 20px rgba(51, 255, 51, 0.2);
+    --scrollbar-thumb: #33ff33;
+    --box-shadow: 0 8px 32px rgba(51, 255, 51, 0.15);
+    
+    & .terminal-body {
+        background: 
+            repeating-linear-gradient(0deg, rgba(0, 43, 0, 1) 0px, rgba(0, 43, 0, 1) 1px, transparent 1px, transparent 2px),
+            radial-gradient(circle at center, rgba(51, 255, 51, 0.1) 0%, transparent 80%);
+    }
+
+    & .terminal::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: repeating-linear-gradient(0deg, rgba(0, 0, 0, 0.2) 0, rgba(0, 0, 0, 0.2) 1px, transparent 1px, transparent 2px);
+        pointer-events: none;
+    }
+}
+
+.theme-dracula {
+    --terminal-bg: linear-gradient(135deg, #282a36 0%, #1a1c24 100%);
+    --terminal-text: #f8f8f2;
+    --terminal-prompt: #bd93f9;
+    --terminal-header: #1e1f29;
+    --terminal-shadow: 0 0 25px rgba(189, 147, 249, 0.2);
+    --scrollbar-thumb: #bd93f9;
+    --box-shadow: 0 8px 32px rgba(189, 147, 249, 0.15);
+    
+    & .command-response {
+        border-left: 3px solid #ff79c6;
+        background: rgba(40, 42, 54, 0.6);
+        box-shadow: 0 0 10px rgba(255, 121, 198, 0.1);
+    }
+
+    & .terminal-body {
+        background: 
+            linear-gradient(135deg, rgba(40, 42, 54, 0.95) 0%, rgba(26, 28, 36, 0.95) 100%);
+    }
+}
+
+.theme-ocean {
+    --terminal-bg: linear-gradient(180deg, #0f111a 0%, #090b10 100%);
+    --terminal-text: #8f93a2;
+    --terminal-prompt: #84ffff;
+    --terminal-header: #090b10;
+    --terminal-shadow: 0 0 30px rgba(132, 255, 255, 0.2);
+    --scrollbar-thumb: #84ffff;
+    --box-shadow: 0 8px 32px rgba(132, 255, 255, 0.15);
+    
+    & .terminal-body {
+        background: 
+            radial-gradient(circle at 50% -100%, rgba(132, 255, 255, 0.15) 0%, transparent 70%),
+            linear-gradient(180deg, rgba(15, 17, 26, 0.95) 0%, rgba(9, 11, 16, 0.95) 100%);
+    }
+
+    & .command-response {
+        border-left: 3px solid #84ffff;
+        background: rgba(15, 17, 26, 0.6);
+        backdrop-filter: blur(10px);
+    }
+}
+
+/* Update terminal base styles to use new theme variables */
+.terminal {
+    background: var(--terminal-bg);
+    box-shadow: var(--box-shadow);
+}
+
+.terminal-body::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-thumb);
+}
+
+/* Add animation for theme transitions */
+.terminal, .terminal-body, .command-response {
+    transition: all 0.5s ease;
+}
+
+/* Enhance scanline effect */
+.scanline {
+    background: linear-gradient(
+        0deg,
+        transparent 0%,
+        var(--terminal-prompt) 50%,
+        transparent 100%
+    );
+    opacity: 0.05;
+}
+
+/* Theme backgrounds and effects */
+body.theme-default {
+    background: linear-gradient(135deg, #2b2b2b 0%, #1a1a1a 100%);
+    & .terminal {
+        box-shadow: 0 0 50px rgba(0, 255, 0, 0.1);
+    }
+}
+
+body.theme-cyberpunk {
+    background: 
+        linear-gradient(45deg, #1a0021 0%, #000000 100%),
+        repeating-linear-gradient(
+            45deg,
+            transparent 0,
+            transparent 2px,
+            rgba(255, 0, 255, 0.1) 2px,
+            rgba(255, 0, 255, 0.1) 4px
+        );
+    & .terminal {
+        box-shadow: 
+            0 0 50px rgba(255, 0, 255, 0.3),
+            0 0 100px rgba(0, 255, 255, 0.2);
+    }
+    & .terminal::after {
+        content: '';
+        position: absolute;
+        top: -5px;
+        left: -5px;
+        right: -5px;
+        bottom: -5px;
+        background: linear-gradient(45deg, #ff00ff, #00ffff);
+        z-index: -1;
+        filter: blur(20px);
+        opacity: 0.3;
+    }
+}
+
+body.theme-retro {
+    background: #001200;
+    position: relative;
+    overflow: hidden;
+    &::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: repeating-linear-gradient(
+            0deg,
+            rgba(0, 255, 0, 0.03) 0px,
+            rgba(0, 255, 0, 0.03) 1px,
+            transparent 1px,
+            transparent 2px
+        );
+        pointer-events: none;
+    }
+    & .terminal {
+        box-shadow: 0 0 30px rgba(51, 255, 51, 0.2);
+    }
+}
+
+body.theme-dracula {
+    background: 
+        linear-gradient(135deg, #191a21 0%, #282a36 100%),
+        radial-gradient(circle at 50% 0, rgba(189, 147, 249, 0.1), transparent 70%);
+    & .terminal {
+        box-shadow: 0 0 40px rgba(189, 147, 249, 0.2);
+    }
+}
+
+body.theme-ocean {
+    background: 
+        linear-gradient(180deg, #090b10 0%, #0f111a 100%),
+        radial-gradient(
+            ellipse at top,
+            rgba(132, 255, 255, 0.2) 0%,
+            transparent 70%
+        );
+    & .terminal {
+        box-shadow: 0 0 60px rgba(132, 255, 255, 0.15);
+    }
+    & .terminal::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: 
+            radial-gradient(
+                circle at 50% 150%,
+                rgba(132, 255, 255, 0.2) 0%,
+                transparent 70%
+            );
+        pointer-events: none;
+    }
+}
+
+/* ...existing code... */
