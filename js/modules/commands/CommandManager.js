@@ -7,9 +7,17 @@ export class CommandManager {
         this.terminal = terminal;
         this.commandHistory = [];
         this.historyIndex = -1;
+        
+        // Define commands mapping
         this.commands = {
+            'about': async () => await PortfolioCommands.showAboutWithAnimation(terminal),
+            'education': async () => await PortfolioCommands.showEducationWithAnimation(terminal),
+            'experience': async () => await PortfolioCommands.showExperienceWithAnimation(terminal),
+            'skills': async () => await PortfolioCommands.showSkillsWithAnimation(terminal),
+            'projects': async () => await PortfolioCommands.showProjectsWithAnimation(terminal),
+            'achievements': async () => await PortfolioCommands.showAchievementsWithAnimation(terminal),
+            'contact': async () => await PortfolioCommands.showContactWithAnimation(terminal),
             ...SystemCommands.getCommands(terminal),
-            ...PortfolioCommands.getCommands(terminal),
             ...GameCommands.getCommands(terminal)
         };
     }
@@ -18,19 +26,17 @@ export class CommandManager {
         if (commandStr.trim() === '') return;
 
         this.addToHistory(commandStr);
-
-        if (this.terminal.isTyping) {
-            this.terminal.commandQueue.push(commandStr);
-            return;
-        }
-
-        const [cmd, ...args] = commandStr.split(' ');
-        const command = this.commands[cmd];
-
-        if (command) {
-            await command(...args);
-        } else {
-            this.terminal.print(`Command not found: ${cmd}. Type 'help' for available commands.\n`);
+        const [cmd, ...args] = commandStr.toLowerCase().trim().split(' ');
+        
+        try {
+            if (this.commands[cmd]) {
+                await this.commands[cmd](...args);
+            } else {
+                this.terminal.print(`Command not found: ${cmd}. Type 'help' for available commands.\n`);
+            }
+        } catch (error) {
+            console.error('Error executing command:', error);
+            this.terminal.print('An error occurred while executing the command.\n');
         }
     }
 

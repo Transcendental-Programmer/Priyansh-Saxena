@@ -6,6 +6,25 @@ console.log('POLYFILL => User Agent Browser:', getBrowserInfo());
 // Initialize terminal when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     const terminal = new Terminal();
+    
+    // Set up navigation section click handlers
+    document.querySelectorAll('.nav-section').forEach(section => {
+        section.addEventListener('click', () => {
+            const command = section.dataset.section;
+            if (command) {
+                // Remove active class from all sections
+                document.querySelectorAll('.nav-section').forEach(s => {
+                    s.classList.remove('active');
+                });
+                
+                // Add active class to clicked section
+                section.classList.add('active');
+                
+                // Execute the command
+                terminal.executeCommand(command);
+            }
+        });
+    });
 });
 
 // Helper function to get browser info

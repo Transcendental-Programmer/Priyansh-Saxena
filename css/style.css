@@ -2,6 +2,7 @@
     --terminal-bg: #1e1e1e;
     --terminal-text: #f0f0f0;
     --terminal-prompt: #00ff00;
+    --terminal-prompt-rgb: 0, 255, 0;
 }
 
 * {
@@ -18,17 +19,21 @@ body {
     justify-content: center;
     align-items: center;
     transition: background 0.5s ease;
+    padding-left: 240px; /* Make space for combined nav */
+    padding-right: 20px;
 }
 
 .terminal {
-    width: 80%;
-    height: 80vh;
+    width: 85%; /* Increased from 80% */
+    height: 90vh; /* Increased from 80vh */
     background-color: var(--terminal-bg);
     border-radius: 10px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
     overflow: hidden;
     position: relative;
     transition: transform 0.3s ease, box-shadow 0.3s ease, all 0.5s ease;
+    width: calc(100% - 20px);
+    margin-left: auto;
 }
 
 .terminal:hover {
@@ -93,6 +98,10 @@ body {
     );
     font-size: 14px;
     line-height: 1.6;
+    scrollbar-width: thin;
+    scrollbar-color: var(--terminal-prompt) rgba(0, 0, 0, 0.3);
+    overflow-y: scroll;
+    padding-right: 10px; /* Prevent content from touching scrollbar */
 }
 
 .terminal-body::-webkit-scrollbar {
@@ -101,11 +110,14 @@ body {
 
 .terminal-body::-webkit-scrollbar-track {
     background: rgba(0, 0, 0, 0.3);
+    border-radius: 4px;
 }
 
 .terminal-body::-webkit-scrollbar-thumb {
     background: var(--terminal-prompt);
     border-radius: 4px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
 }
 
 .input-line {
@@ -565,3 +577,768 @@ body.theme-ocean {
 }
 
 /* ...existing code... */
+
+.terminal-output-block {
+    margin: 15px 0;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    border-left: 3px solid var(--terminal-prompt);
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.section-header {
+    font-size: 1.2em;
+    color: var(--terminal-prompt);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.info-label {
+    color: var(--terminal-prompt);
+    font-weight: bold;
+}
+
+.info-value {
+    color: var(--terminal-text);
+}
+
+.skill-category {
+    margin: 10px 0;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 5px;
+}
+
+.skill-item {
+    display: inline-block;
+    margin: 4px;
+    padding: 4px 8px;
+    background: rgba(0, 255, 0, 0.1);
+    border-radius: 4px;
+    border: 1px solid var(--terminal-prompt);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Enhanced box decorations */
+.decorated-box {
+    position: relative;
+    margin: 20px 0;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+}
+
+.decorated-box::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, 
+        var(--terminal-prompt) 0%, 
+        transparent 10%,
+        transparent 90%,
+        var(--terminal-prompt) 100%
+    );
+    opacity: 0.1;
+    border-radius: 8px;
+    z-index: -1;
+}
+
+/* Quick Access Navigation */
+.quick-nav {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    padding: 10px;
+    border-radius: 10px;
+    z-index: 100;
+    max-height: 80vh;
+    overflow-y: auto;
+    width: 200px;
+    /* Ensure it doesn't overlap with terminal */
+    margin-right: calc(10vw - 220px);
+}
+
+.quick-nav-item {
+    color: var(--terminal-text);
+    padding: 8px 12px;
+    margin: 5px 0;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.quick-nav-item:hover {
+    background: var(--terminal-prompt);
+    color: black;
+}
+
+/* Terminal Tabs */
+.terminal-tabs {
+    display: flex;
+    background: rgba(0, 0, 0, 0.3);
+    padding: 5px 5px 0;
+    gap: 2px;
+    position: relative;
+    overflow: visible; /* Allow tooltips to overflow */
+    z-index: 10; /* Ensure tabs stay above terminal content */
+}
+
+.terminal-tab {
+    padding: 8px 15px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 5px 5px 0 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    position: relative;
+    color: var(--terminal-text); /* Add text color */
+    white-space: nowrap;
+    z-index: 1; /* Ensure proper stacking */
+}
+
+.terminal-tab.active {
+    background: var(--terminal-bg);
+    color: var(--terminal-prompt);
+    border-bottom: 2px solid var(--terminal-prompt);
+}
+
+.terminal-tab:hover {
+    background: rgba(0, 0, 0, 0.7);
+    color: var(--terminal-prompt);
+}
+
+/* Enhanced Tab Description */
+.terminal-tab .tab-description {
+    position: absolute;
+    top: 100%; /* Position right below the tab */
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%); /* Center adjustment */
+    background: rgba(0, 0, 0, 0.95);
+    color: var(--terminal-text);
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-size: 0.9em;
+    border: 1px solid var(--terminal-prompt);
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    z-index: 1000;
+    width: max-content;
+    min-width: 200px;
+    max-width: 300px;
+    margin-top: 8px; /* Add some space between tab and tooltip */
+    pointer-events: none; /* Prevent tooltip from blocking interactions */
+}
+
+/* Improved Tooltip Styling */
+.terminal-tab .tab-description {
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 0;
+    background: rgba(0, 0, 0, 0.95);
+    color: var(--terminal-text);
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-size: 0.9em;
+    border: 1px solid var(--terminal-prompt);
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    z-index: 1000;
+    min-width: 200px;
+    max-width: 400px; /* Increased max-width */
+    width: max-content;
+    white-space: normal;
+    line-height: 1.4;
+    /* Remove height restrictions */
+    height: auto;
+    max-height: none;
+    /* Improve text wrapping */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+/* Add fade-in animation for tooltip */
+@keyframes tooltipFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.terminal-tab:hover .tab-description {
+    opacity: 1;
+    visibility: visible;
+    animation: tooltipFadeIn 0.2s ease-out;
+}
+
+/* Position tooltip properly */
+.terminal-tab {
+    position: relative;
+    /* Ensure enough space for tooltip */
+    margin-bottom: 5px;
+}
+
+.terminal-tab:hover .tab-description {
+    opacity: 1;
+    visibility: visible;
+}
+
+.terminal-content {
+    position: relative;
+    height: calc(100% - 40px);
+}
+
+.terminal-body[data-content="preview"],
+.terminal-body[data-content="combined"] {
+    display: none;
+}
+
+.terminal-body[data-content].active {
+    display: block !important;
+}
+
+.terminal-body[data-content="combined"].active {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.preview-content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.preview-section {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 3px solid var(--terminal-prompt);
+}
+
+.preview-title {
+    color: var(--terminal-prompt);
+    font-size: 1.2em;
+    margin-bottom: 15px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--terminal-prompt);
+}
+
+.preview-body {
+    line-height: 1.6;
+}
+
+.terminal-body[data-content="preview"].active,
+.terminal-body[data-content="combined"].active {
+    display: block;
+}
+
+.terminal-body[data-content="combined"].active {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.terminal-side, 
+.preview-side {
+    height: 100%;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.terminal-side {
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Keyboard Shortcut Hints */
+.shortcut-hint {
+    position: absolute;
+    right: 10px;
+    color: var(--terminal-prompt);
+    opacity: 0.7;
+    font-size: 0.8em;
+}
+
+/* Section Navigator */
+.section-navigator {
+    position: fixed;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    padding: 10px;
+    border-radius: 10px;
+    z-index: 100;
+    max-height: 80vh;
+    overflow-y: auto;
+    width: 200px;
+    /* Ensure it doesn't overlap with terminal */
+    margin-left: calc(10vw - 220px);
+}
+
+.nav-section {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-left: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+/* ...existing code... */
+
+/* Fixed Navigation Styling */
+.nav-section {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-left: 2px solid transparent;
+    transition: all 0.3s ease;
+    color: var(--terminal-text); /* Add text color */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
+.nav-section:hover,
+.nav-section.active {
+    background: rgba(var(--terminal-prompt-rgb), 0.1);
+    color: var(--terminal-prompt);
+    border-left: 2px solid var(--terminal-prompt);
+}
+
+.nav-section span {
+    flex-shrink: 0; /* Prevent emoji from wrapping */
+}
+
+.nav-section-text {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Improved Floating Windows Positioning */
+.section-navigator {
+    position: fixed;
+    left: max(20px, calc(10vw - 200px));
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.85);
+    padding: 10px;
+    border-radius: 10px;
+    z-index: 100;
+    max-height: 80vh;
+    overflow-y: auto;
+    width: 180px;
+    /* Adjusted positioning */
+    margin: 0;
+    /* Add glass effect */
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.quick-nav {
+    position: fixed;
+    right: max(20px, calc(10vw - 200px));
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.85);
+    padding: 10px;
+    border-radius: 10px;
+    z-index: 100;
+    max-height: 80vh;
+    overflow-y: auto;
+    width: 180px;
+    /* Adjusted positioning */
+    margin: 0;
+    /* Add glass effect */
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.quick-nav-item {
+    color: var(--terminal-text);
+    padding: 8px 12px;
+    margin: 5px 0;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9em;
+    position: relative;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
+.quick-nav-item:hover {
+    background: rgba(var(--terminal-prompt-rgb), 0.1);
+    border-color: var(--terminal-prompt);
+    color: var(--terminal-prompt);
+}
+
+.quick-nav-item span {
+    flex-shrink: 0; /* Prevent emoji from wrapping */
+}
+
+.quick-nav-text {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 1400px) {
+    .section-navigator,
+    .quick-nav {
+        width: 150px;
+    }
+    
+    .terminal {
+        width: calc(100% - 400px); /* Adjust terminal width to accommodate nav panels */
+        margin: 0 200px; /* Center terminal between nav panels */
+    }
+}
+
+@media (max-width: 1200px) {
+    .section-navigator {
+        left: 10px;
+    }
+    
+    .quick-nav {
+        right: 10px;
+    }
+    
+    .terminal {
+        width: calc(100% - 320px);
+        margin: 0 160px;
+    }
+}
+
+/* Enhanced visibility for navigation items */
+.quick-nav-item {
+    color: var(--terminal-text);
+    padding: 8px 12px;
+    margin: 5px 0;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9em;
+    position: relative;
+    border: 1px solid transparent;
+}
+
+.quick-nav-item:hover {
+    background: rgba(var(--terminal-prompt-rgb), 0.1);
+    border-color: var(--terminal-prompt);
+    color: var(--terminal-prompt);
+}
+
+/* Add hover effects and active states */
+.nav-section.active,
+.quick-nav-item.active {
+    background: rgba(var(--terminal-prompt-rgb), 0.1);
+    border-left-color: var(--terminal-prompt);
+    color: var(--terminal-prompt);
+}
+
+/* Add smooth scrollbar for navigation panels */
+.section-navigator,
+.quick-nav {
+    scrollbar-width: thin;
+    scrollbar-color: var(--terminal-prompt) rgba(0, 0, 0, 0.3);
+}
+
+.section-navigator::-webkit-scrollbar,
+.quick-nav::-webkit-scrollbar {
+    width: 4px;
+}
+
+.section-navigator::-webkit-scrollbar-track,
+.quick-nav::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+.section-navigator::-webkit-scrollbar-thumb,
+.quick-nav::-webkit-scrollbar-thumb {
+    background-color: var(--terminal-prompt);
+    border-radius: 4px;
+}
+
+/* ...existing code... */
+
+/* Updated Layout Structure */
+
+/* Combined Navigation Panel */
+.navigation-panel {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 220px;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 20px 0;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+.nav-section, 
+.quick-nav-item {
+    padding: 10px 15px;
+    margin: 2px 10px;
+    border-radius: 5px;
+    color: var(--terminal-text);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.95em;
+}
+
+.nav-section span, 
+.quick-nav-item span {
+    flex-shrink: 0;
+}
+
+.nav-section-text, 
+.quick-nav-text {
+    flex: 1;
+}
+
+/* Updated Terminal Position */
+
+/* Fixed Tab Description Tooltip */
+.terminal-tab {
+    position: relative;
+}
+
+/* Remove old navigation styles */
+
+/* Navigation Divider */
+.nav-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin: 10px;
+}
+
+/* Active and Hover States */
+.nav-section:hover,
+.quick-nav-item:hover,
+.nav-section.active,
+.quick-nav-item.active {
+    background: rgba(var(--terminal-prompt-rgb), 0.1);
+    color: var(--terminal-prompt);
+    border-left: 2px solid var(--terminal-prompt);
+}
+
+/* Responsive Layout */
+@media (max-width: 1200px) {
+    body {
+        padding-left: 200px;
+    }
+    
+    .navigation-panel {
+        width: 180px;
+    }
+}
+
+/* ...existing code... */
+
+/* Enhanced Navigation Panel */
+.navigation-panel {
+    padding-top: 60px;
+}
+
+.nav-header {
+    color: var(--terminal-prompt);
+    font-size: 0.9em;
+    padding: 10px 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.shortcut-list {
+    padding: 0 10px;
+}
+
+.shortcut-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 10px;
+    font-size: 0.85em;
+    color: var(--terminal-text);
+}
+
+.shortcut-item .key {
+    color: var (--terminal-prompt);
+    background: rgba(0, 255, 0, 0.1);
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.9em;
+}
+
+/* Fix Tooltip Sizing */
+.terminal-tab .tab-description {
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 0;
+    background: rgba(0, 0, 0, 0.95);
+    color: var(--terminal-text);
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-size: 0.9em;
+    border: 1px solid var(--terminal-prompt);
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s ease;
+    z-index: 1000;
+    max-width: 250px;
+    width: max-content;
+    min-width: 200px;
+    line-height: 1.4;
+    white-space: normal;
+}
+
+.terminal-tab:hover .tab-description {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+/* ...existing code... */
+
+/* Preview Tab Styling */
+.preview-content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.preview-section {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 3px solid var(--terminal-prompt);
+}
+
+.preview-title {
+    color: var(--terminal-prompt);
+    font-size: 1.2em;
+    margin-bottom: 15px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid var(--terminal-prompt);
+}
+
+/* Combined View Styling */
+.terminal-body[data-content="combined"] {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding: 0;
+    height: 100%;
+}
+
+.terminal-side, 
+.preview-side {
+    height: 100%;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.terminal-side {
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+
+.nav-section {
+    padding: 10px 15px;
+    margin: 2px 10px;
+    border-radius: 5px;
+    color: var(--terminal-text);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.95em;
+    position: relative;
+    overflow: hidden;
+    border-left: 2px solid transparent;
+}
+
+.nav-section:hover,
+.nav-section.active {
+    background: rgba(var(--terminal-prompt-rgb), 0.1);
+    color: var(--terminal-prompt);
+    border-left: 2px solid var(--terminal-prompt);
+}
+
+.nav-section:active {
+    transform: scale(0.98);
+}
+
+.nav-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--terminal-prompt);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.nav-section:hover::before {
+    opacity: 0.1;
+}

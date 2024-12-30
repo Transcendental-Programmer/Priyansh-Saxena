@@ -8,6 +8,23 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
+    <!-- Quick Section Navigator -->
+    <div class="section-navigator">
+        <div class="nav-section" data-section="about">
+            <span>📌</span>
+            <span class="nav-section-text">About</span>
+        </div>
+        <div class="nav-section" data-section="education">
+            <span>📚</span>
+            <span class="nav-section-text">Education</span>
+        </div>
+        <div class="nav-section" data-section="experience">💼 Experience</div>
+        <div class="nav-section" data-section="skills">🛠️ Skills</div>
+        <div class="nav-section" data-section="projects">🚀 Projects</div>
+        <div class="nav-section" data-section="achievements">🏆 Achievements</div>
+        <div class="nav-section" data-section="contact">📞 Contact</div>
+    </div>
+
     <div class="loading-screen">
         <div class="loading-animation"></div>
         <div class="loading-text">Initializing Terminal</div>
@@ -25,18 +42,124 @@
             </div>
             <div class="title">terminal@portfolio</div>
         </div>
-        <div class="terminal-body">
-            <div id="output"></div>
-            <div class="input-line">
-                <span class="prompt">visitor@portfolio:~$</span>
-                <input type="text" id="terminal-input" autofocus>
-                <span class="cursor"></span>
+        
+        <!-- Enhanced Terminal Tabs -->
+        <div class="terminal-tabs">
+            <div class="terminal-tab active" data-tab="terminal">
+                🖥️ Terminal
+                <div class="tab-description">Classic terminal interface with command input</div>
+            </div>
+            <div class="terminal-tab" data-tab="preview">
+                👁️ Preview
+                <div class="tab-description">View all sections at once without commands</div>
+            </div>
+            <div class="terminal-tab" data-tab="combined">
+                ⚡ Combined
+                <div class="tab-description">Split view: Terminal + Preview side by side</div>
+            </div>
+        </div>
+
+        <!-- Terminal Content -->
+        <div class="terminal-content">
+            <div class="terminal-body active" data-content="terminal">
+                <!-- Existing terminal content -->
+                <div id="output"></div>
+                <div class="input-line">
+                    <span class="prompt">visitor@portfolio:~$</span>
+                    <input type="text" id="terminal-input" autofocus>
+                    <span class="cursor"></span>
+                </div>
+            </div>
+            
+            <div class="terminal-body" data-content="preview">
+                <div class="preview-content">
+                    <!-- Content will be populated dynamically -->
+                </div>
+            </div>
+            
+            <div class="terminal-body" data-content="combined">
+                <div class="terminal-side">
+                    <div id="combined-output"></div>
+                    <div class="input-line">
+                        <span class="prompt">visitor@portfolio:~$</span>
+                        <input type="text" id="combined-input" autofocus>
+                    </div>
+                </div>
+                <div class="preview-side">
+                    <!-- Content will be populated dynamically -->
+                </div>
             </div>
         </div>
         <div class="loading-indicator">
             <div class="spinner"></div>
         </div>
     </div>
+
+    <!-- Replace old navigation with combined panel -->
+    <div class="navigation-panel">
+        <!-- Navigation Sections -->
+        <div class="nav-section" data-section="about">
+            <span>📌</span>
+            <span class="nav-section-text">About</span>
+        </div>
+        <div class="nav-section" data-section="education">
+            <span>📚</span>
+            <span class="nav-section-text">Education</span>
+        </div>
+        <div class="nav-section" data-section="experience">
+            <span>💼</span>
+            <span class="nav-section-text">Experience</span>
+        </div>
+        <div class="nav-section" data-section="skills">
+            <span>🛠️</span>
+            <span class="nav-section-text">Skills</span>
+        </div>
+        <div class="nav-section" data-section="projects">
+            <span>🚀</span>
+            <span class="nav-section-text">Projects</span>
+        </div>
+        <div class="nav-section" data-section="achievements">
+            <span>🏆</span>
+            <span class="nav-section-text">Achievements</span>
+        </div>
+        <div class="nav-section" data-section="contact">
+            <span>📞</span>
+            <span class="nav-section-text">Contact</span>
+        </div>
+
+        <div class="nav-divider"></div>
+
+        <div class="nav-header">Keyboard Shortcuts</div>
+        <div class="shortcut-list">
+            <div class="shortcut-item">
+                <span class="key">Alt+A</span>
+                <span class="action">About</span>
+            </div>
+            <div class="shortcut-item">
+                <span class="key">Alt+E</span>
+                <span class="action">Education</span>
+            </div>
+            <!-- Add other shortcuts -->
+        </div>
+    </div>
+
     <script type="module" src="js/index.js"></script>
+    <script>
+        function switchTab(tabName) {
+            // Remove active class from all tabs and contents
+            document.querySelectorAll('.terminal-tab, .terminal-body').forEach(el => {
+                el.classList.remove('active');
+            });
+
+            // Activate selected tab and content
+            document.querySelector(`.terminal-tab[data-tab="${tabName}"]`).classList.add('active');
+            document.querySelector(`.terminal-body[data-content="${tabName}"]`).classList.add('active');
+
+            // Immediately update preview content when switching to preview or combined tabs
+            if (tabName === 'preview' || tabName === 'combined') {
+                this.updatePreviewContent();
+            }
+        }
+    </script>
 </body>
 </html>

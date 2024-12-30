@@ -1,6 +1,6 @@
 export class ThemeManager {
     constructor() {
-        this.currentTheme = 'default';
+        this.currentTheme = 'dracula'; // Ensure default theme is 'dracula'
         this.themes = {
             'default': {
                 name: 'Default',

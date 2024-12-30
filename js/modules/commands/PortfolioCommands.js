@@ -13,45 +13,97 @@ export class PortfolioCommands {
         };
     }
 
+    static highlightSection(sectionId) {
+        // First, remove active class from all sections
+        const allSections = document.querySelectorAll('.nav-section');
+        allSections.forEach(section => section.classList.remove('active'));
+
+        // Then add active class to the specific section
+        const section = document.querySelector(`.nav-section[data-section="${sectionId}"]`);
+        if (section) {
+            section.classList.add('active');
+        }
+    }
+
+    static async typeText(text, speed = 5) { // Decreased from default 30
+        // ...existing code...
+    }
+
     static async showAboutWithAnimation(terminal) {
-        await terminal.typeText('Loading profile...\n');
-        await terminal.typeText(ASCIIAnimations.profile);
-        await terminal.typeText(this.getAboutText());
+        try {
+            terminal.commandInProgress = true;
+            await terminal.typeText('Loading about me...\n');
+            await terminal.typeText(this.getAboutText());
+            this.highlightSection('about');
+        } finally {
+            terminal.commandInProgress = false;
+        }
     }
 
     static async showEducationWithAnimation(terminal) {
-        await terminal.typeText('📚 Loading education details...\n');
-        await terminal.typeText(ASCIIAnimations.book);
-        await terminal.typeText(this.getEducationText());
+        try {
+            terminal.commandInProgress = true;
+            await terminal.typeText('Loading education...\n');
+            await terminal.typeText(this.getEducationText());
+            this.highlightSection('education');
+        } finally {
+            terminal.commandInProgress = false;
+        }
     }
 
     static async showExperienceWithAnimation(terminal) {
-        await terminal.typeText('💼 Loading work experience...\n');
-        await terminal.typeText(ASCIIAnimations.computer);
-        await terminal.typeText(this.getExperienceText());
+        try {
+            terminal.commandInProgress = true;
+            await terminal.typeText('💼 Loading work experience...\n');
+            await terminal.typeText(ASCIIAnimations.computer);
+            await terminal.typeText(this.getExperienceText());
+            this.highlightSection('experience');
+        } finally {
+            terminal.commandInProgress = false;
+        }
     }
 
     static async showSkillsWithAnimation(terminal) {
-        await terminal.typeText('🛠️ Loading skills...\n');
-        await terminal.typeText(ASCIIAnimations.tools);
-        await terminal.typeText(this.getSkillsText());
+        try {
+            terminal.commandInProgress = true;
+            await terminal.typeText('🛠️ Loading skills...\n');
+            await terminal.typeText(ASCIIAnimations.tools);
+            await terminal.typeText(this.getSkillsText());
+            this.highlightSection('skills');
+        } finally {
+            terminal.commandInProgress = false;
+        }
     }
 
     static async showProjectsWithAnimation(terminal) {
-        await terminal.typeText('🚀 Loading projects...\n');
-        await terminal.typeText(ASCIIAnimations.rocket);
-        await terminal.typeText(this.getProjectsText());
+        try {
+            terminal.commandInProgress = true;
+            await terminal.typeText('🚀 Loading projects...\n');
+            await terminal.typeText(ASCIIAnimations.rocket);
+            await terminal.typeText(this.getProjectsText());
+            this.highlightSection('projects');
+        } finally {
+            terminal.commandInProgress = false;
+        }
     }
 
     static async showAchievementsWithAnimation(terminal) {
-        await terminal.typeText('🏆 Loading achievements...\n');
-        await terminal.typeText(ASCIIAnimations.trophy);
-        await terminal.typeText(this.getAchievementsText());
+        try {
+            terminal.commandInProgress = true;
+            await terminal.typeText('🏆 Loading achievements...\n');
+            await terminal.typeText(ASCIIAnimations.trophy);
+            await terminal.typeText(this.getAchievementsText());
+            this.highlightSection('achievements');
+        } finally {
+            terminal.commandInProgress = false;
+        }
     }
 
     static async showContactWithAnimation(terminal) {
-        await terminal.typeText('📞 Loading contact details...\n');
-        await terminal.typeText(`
+        try {
+            terminal.commandInProgress = true;
+            await terminal.typeText('📞 Loading contact details...\n');
+            await terminal.typeText(`
     ╔══════════════════════════╗
     ║     Contact Details      ║
     ╚══════════════════════════╝
@@ -81,22 +133,36 @@ export class PortfolioCommands {
     Email for professional inquiries
     LinkedIn for networking
 \n`);
+            this.highlightSection('contact');
+        } finally {
+            terminal.commandInProgress = false;
+        }
     }
 
     static getAboutText() {
         return `
-┌────────────────────────────────────────┐
-│ About Me                               │
-└────────────────────────────────────────┘
-Name: Priyansh Saxena
-Roll Number: 2022IMT089
-Institute: ABV-IIITM Gwalior
-Role: Full-Stack Machine Learning Engineer
+╔══════════════════════════════════════════════╗
+║                  About Me                     ║
+╚══════════════════════════════════════════════╝
 
-Contact:
-📱 +91-7417513597
-📧 priyena.career@gmail.com
-🔗 GitHub: Transcendental-Programmer
+👨‍💻 Personal Info
+   ──────────────
+   Name: Priyansh Saxena
+   Role: Full-Stack Machine Learning Engineer
+   Location: ABV-IIITM Gwalior
+
+📞 Contact Details
+   ──────────────
+   📱 Phone: +91-7417513597
+   📧 Email: priyena.career@gmail.com
+   🔗 GitHub: Transcendental-Programmer
+
+🎯 Professional Summary
+   ──────────────
+   A passionate developer specializing in full-stack 
+   development and machine learning, with expertise 
+   in building scalable applications and implementing 
+   AI solutions.
 \n`;
     }
 
@@ -171,20 +237,27 @@ Contact:
 
     static getSkillsText() {
         return `
-┌────────────────────────────────────────┐
-│ Skills                                 │
-└────────────────────────────────────────┘
-💻 Programming & ML
-   Python, C++, Java, GO, Kotlin, SQL
-   TensorFlow, Keras, Scikit-Learn, OpenCV, LangChain
+╔══════════════════════════════════════════════╗
+║              Technical Skills                 ║
+╚══════════════════════════════════════════════╝
 
-🔧 Backend & Data
-   Django, Flask, FastAPI, Docker
-   Streamlit, MLflow, Selenium, BeautifulSoup
+🔹 Programming & ML
+   ───────────────
+   ⚡ Languages: Python, C++, Java, GO, Kotlin, SQL
+   ⚡ ML/AI: TensorFlow, Keras, Scikit-Learn, OpenCV
+   ⚡ LLMs: LangChain, Hugging Face, Azure OpenAI
 
-☁️ Databases & Cloud
-   MySQL, PostgreSQL, MongoDB, Neo4j
-   AWS, Azure, MQTT, CI/CD (GitHub Actions), Kubernetes
+🔹 Backend & DevOps
+   ───────────────
+   ⚡ Frameworks: Django, Flask, FastAPI
+   ⚡ Tools: Docker, Kubernetes, MLflow
+   ⚡ Testing: Selenium, PyTest, JUnit
+
+🔹 Databases & Cloud
+   ───────────────
+   ⚡ SQL: MySQL, PostgreSQL
+   ⚡ NoSQL: MongoDB, Neo4j
+   ⚡ Cloud: AWS, Azure, GCP
 \n`;
     }
 
